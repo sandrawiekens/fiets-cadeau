@@ -1,102 +1,101 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🎉 Verrassing! 🎉</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #fff;
+      background-color: #fefefe;
       overflow: hidden;
       font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       text-align: center;
     }
     h1 {
-      font-size: 3em;
-      margin-top: 150px;
+      font-size: 2.5em;
       color: #4CAF50;
-      z-index: 10;
-      position: relative;
+      margin-bottom: 0;
     }
     #amount {
       font-size: 4em;
-      color: #000;
-      margin-top: 20px;
       font-weight: bold;
-      z-index: 10;
-      position: relative;
+      color: #000;
     }
     canvas {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
+      z-index: 0;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
-  <h1>Je hebt gekregen:</h1>
-  <div id="amount">€75,-</div>
   <canvas id="confetti-canvas"></canvas>
+  <div class="content">
+    <h1>Je hebt gekregen:</h1>
+    <div id="amount">€75,-</div>
+  </div>
 
   <script>
-    // Eenvoudige confetti-animatie
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
-    let W = window.innerWidth;
-    let H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    let confetti = [];
-    for(let i = 0; i < 300; i++) {{
-      confetti.push({{
-        x: Math.random() * W,
-        y: Math.random() * H - H,
-        r: Math.random() * 6 + 2,
-        d: Math.random() * 100,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-        tilt: Math.floor(Math.random() * 10) - 10,
-        tiltAngle: 0,
-        tiltAngleIncremental: (Math.random() * 0.07) + 0.05
-      }});
-    }}
+    let confetti = Array.from({ length: 300 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 2,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngle: 0,
+      tiltAngleIncremental: (Math.random() * 0.07) + 0.05
+    }));
 
-    function draw() {{
-      ctx.clearRect(0, 0, W, H);
-      for(let i = 0; i < confetti.length; i++) {{
-        let c = confetti[i];
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach(c => {
         ctx.beginPath();
         ctx.lineWidth = c.r;
         ctx.strokeStyle = c.color;
-        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
-        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.moveTo(c.x + c.tilt, c.y);
+        ctx.lineTo(c.x, c.y + c.tilt + c.r / 2);
         ctx.stroke();
-      }}
+      });
       update();
-    }}
+    }
 
-    function update() {{
-      for(let i = 0; i < confetti.length; i++) {{
-        let c = confetti[i];
+    function update() {
+      confetti.forEach(c => {
         c.tiltAngle += c.tiltAngleIncremental;
-        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
-        c.tilt = Math.sin(c.tiltAngle - (i / 3)) * 15;
+        c.y += (Math.cos(c.tiltAngle) + 3 + c.r / 2) / 2;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
 
-        if(c.y > H) {{
+        if (c.y > canvas.height) {
           c.y = -10;
-          c.x = Math.random() * W;
-        }}
-      }}
-    }}
+          c.x = Math.random() * canvas.width;
+        }
+      });
+    }
 
-    (function animate() {{
+    (function animate() {
       draw();
       requestAnimationFrame(animate);
-    }})();
+    })();
   </script>
 </body>
 </html>
