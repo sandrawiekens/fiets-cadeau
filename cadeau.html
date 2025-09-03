@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎉 Verrassing! 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3em;
+      margin-top: 150px;
+      color: #4CAF50;
+      z-index: 10;
+      position: relative;
+    }
+    #amount {
+      font-size: 4em;
+      color: #000;
+      margin-top: 20px;
+      font-weight: bold;
+      z-index: 10;
+      position: relative;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Je hebt gekregen:</h1>
+  <div id="amount">€75,-</div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <script>
+    // Eenvoudige confetti-animatie
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    let confetti = [];
+    for(let i = 0; i < 300; i++) {{
+      confetti.push({{
+        x: Math.random() * W,
+        y: Math.random() * H - H,
+        r: Math.random() * 6 + 2,
+        d: Math.random() * 100,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        tilt: Math.floor(Math.random() * 10) - 10,
+        tiltAngle: 0,
+        tiltAngleIncremental: (Math.random() * 0.07) + 0.05
+      }});
+    }}
+
+    function draw() {{
+      ctx.clearRect(0, 0, W, H);
+      for(let i = 0; i < confetti.length; i++) {{
+        let c = confetti[i];
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.stroke();
+      }}
+      update();
+    }}
+
+    function update() {{
+      for(let i = 0; i < confetti.length; i++) {{
+        let c = confetti[i];
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.tilt = Math.sin(c.tiltAngle - (i / 3)) * 15;
+
+        if(c.y > H) {{
+          c.y = -10;
+          c.x = Math.random() * W;
+        }}
+      }}
+    }}
+
+    (function animate() {{
+      draw();
+      requestAnimationFrame(animate);
+    }})();
+  </script>
+</body>
+</html>
